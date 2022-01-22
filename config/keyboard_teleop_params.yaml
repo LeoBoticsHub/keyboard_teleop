@@ -1,0 +1,4 @@
+cmd_vel_topic_name: "/cmd_vel"
+cmd_vel_father_frame_id: "base_link"
+max_lin_vel: 0.5
+max_ang_vel: 0.5
