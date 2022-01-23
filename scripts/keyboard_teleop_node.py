@@ -13,7 +13,8 @@ import rospy
 from geometry_msgs.msg import TwistStamped
 
 vx, vy, w = 0, 0, 0
-lin_vel, ang_vel, zero_vel = 0.5, 0.5, 0.0
+lin_vel, ang_vel, zero_vel = 0.1, 0.1, 0.0
+max_v, max_w = 0.5, 0.5
 
 
 def usage():
@@ -40,10 +41,22 @@ def on_press(key):
             w = -ang_vel
         elif key.char == 'q':
             w = ang_vel
+        elif key.char == 't':
+            if lin_vel < max_v:
+                lin_vel += 0.1
+        elif key.char == 'g':
+            if lin_vel > 0.11:
+                lin_vel -= 0.1
+        elif key.char == 'y':
+            if ang_vel < max_w:
+                ang_vel += 0.1
+        elif key.char == 'h':
+            if ang_vel > 0.11:
+                ang_vel -= 0.1
         else:
-            rospy.logwarn("Command {0} does NOT exists.".format(key.char))
+            rospy.logwarn("Command {0} does NOT exists.\n".format(key.char))
     except AttributeError:
-        rospy.logwarn("Command {0} does NOT exists.".format(key))
+        rospy.logwarn("Command {0} does NOT exists.\n".format(key))
 
 
 def on_release(key):
@@ -66,8 +79,8 @@ if __name__ == '__main__':
     # initialize parameters
     cmd_vel_topic = rospy.get_param("~cmd_vel_topic_name")
     cmd_vel_father_frame_id = rospy.get_param("~cmd_vel_father_frame_id")
-    lin_vel = rospy.get_param("~max_lin_vel", 0.5)
-    ang_vel = rospy.get_param("~max_ang_vel", 0.5)
+    max_v = rospy.get_param("~max_lin_vel", 0.5)
+    max_w = rospy.get_param("~max_ang_vel", 0.5)
 
     # initialize variables
     seq = 0
@@ -86,13 +99,15 @@ if __name__ == '__main__':
 
     # initialize msg, loop and key command
     key_cmd = ''
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(300)
     cmd_vel_msg = TwistStamped()
     cmd_vel_msg.header.frame_id = cmd_vel_father_frame_id
 
     while not rospy.is_shutdown():
         seq += 1
-        
+
+        print("linear velocity: %.1f, angular velocity: %.1f     " % (lin_vel, ang_vel), end='\r')
+
         # write cmd message
         cmd_vel_msg.header.seq = seq
         cmd_vel_msg.header.stamp = rospy.Time.now()
