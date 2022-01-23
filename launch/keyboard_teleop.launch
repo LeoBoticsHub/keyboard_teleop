@@ -6,6 +6,7 @@
     <!--     Start the controller node -->
     <node name="keyboard_teleop_node" pkg="ros_keyboard_teleop" type="keyboard_teleop_node.py" respawn="false" output="screen">
         <rosparam command="load" file="$(find ros_keyboard_teleop)/config/keyboard_teleop_params.yaml"/>
+        <param name="model_type" value="$(arg model_type)" />
     </node>
 
 </launch>
