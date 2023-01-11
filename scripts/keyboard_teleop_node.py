@@ -2,7 +2,6 @@
 
 import sys
 import subprocess
-
 try:
     from pynput import keyboard
 except ModuleNotFoundError:
@@ -15,7 +14,7 @@ from geometry_msgs.msg import TwistStamped
 vx, vy, w = 0, 0, 0
 
 def get_focused_window():
-    return subprocess.run(['xdotool', 'getwindowfocus', 'getwindowpid', 'getwindowname'], capture_output=True).stdout.decode('utf-8').split()
+    return subprocess.run(['xdotool', 'getwindowfocus'], capture_output=True).stdout.decode('utf-8').split()
 
 def omni_usage():
     print("\n-------------------------------------------------------------\n"
@@ -140,6 +139,8 @@ def omni_on_release(key):
 
 if __name__ == '__main__':
 
+    script_terminal_id = str(get_focused_window())
+
     # init ros node
     rospy.init_node('keyboard_teleop_node')
 
@@ -154,6 +155,7 @@ if __name__ == '__main__':
     cmd_vel_father_frame_id = rospy.get_param("~cmd_vel_father_frame_id")
     max_v = rospy.get_param("~max_lin_vel", 1)
     max_w = rospy.get_param("~max_ang_vel", 1)
+    terminal_focus = rospy.get_param("~terminal_focus", True)
 
     # initialize variables
     seq = 0
@@ -204,9 +206,11 @@ if __name__ == '__main__':
         cmd_vel_msg.twist.linear.y = vy
         cmd_vel_msg.twist.angular.z = w
         
-        windowName = str(get_focused_window())
-        if ('/bin/bash' in windowName) or ('Terminal' in windowName):
-            # publish command
+        current_terminal_id = str(get_focused_window())
+
+        if not terminal_focus:
+            pub.publish(cmd_vel_msg)
+        elif current_terminal_id == script_terminal_id:
             pub.publish(cmd_vel_msg)
 
         rate.sleep()
