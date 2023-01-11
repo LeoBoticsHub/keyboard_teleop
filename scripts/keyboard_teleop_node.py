@@ -14,6 +14,8 @@ from geometry_msgs.msg import TwistStamped
 
 vx, vy, w = 0, 0, 0
 
+def get_focused_window():
+    return subprocess.run(['xdotool', 'getwindowfocus', 'getwindowpid', 'getwindowname'], capture_output=True).stdout.decode('utf-8').split()
 
 def omni_usage():
     print("\n-------------------------------------------------------------\n"
@@ -201,8 +203,10 @@ if __name__ == '__main__':
         cmd_vel_msg.twist.linear.x = vx
         cmd_vel_msg.twist.linear.y = vy
         cmd_vel_msg.twist.angular.z = w
-
-        # publish command
-        pub.publish(cmd_vel_msg)
+        
+        windowName = str(get_focused_window())
+        if ('/bin/bash' in windowName) or ('Terminal' in windowName):
+            # publish command
+            pub.publish(cmd_vel_msg)
 
         rate.sleep()
