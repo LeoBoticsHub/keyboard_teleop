@@ -9,7 +9,7 @@ except ModuleNotFoundError:
     print("pynput python package succesfully installed. Relaunch the application.")
 
 import rospy
-from geometry_msgs.msg import TwistStamped
+from geometry_msgs.msg import TwistStamped, Twist
 
 vx, vy, w = 0, 0, 0
 
@@ -156,6 +156,7 @@ if __name__ == '__main__':
     max_v = rospy.get_param("~max_lin_vel", 1)
     max_w = rospy.get_param("~max_ang_vel", 1)
     terminal_focus = rospy.get_param("~terminal_focus", True)
+    use_only_twist = rospy.get_param("~use_only_twist", True)
 
     # initialize variables
     seq = 0
@@ -163,7 +164,10 @@ if __name__ == '__main__':
     lin_vel, ang_vel, zero_vel = max_v/2, max_w/2, 0.0
 
     # cmd vel publisher
-    pub = rospy.Publisher(cmd_vel_topic, TwistStamped, queue_size=10)
+    if use_only_twist:
+        pub = rospy.Publisher(cmd_vel_topic, Twist, queue_size=10)
+    else:   
+        pub = rospy.Publisher(cmd_vel_topic, TwistStamped, queue_size=10)
 
     # choose keyboard handling depending on robot type
     if model_type == 'omni':
@@ -191,8 +195,11 @@ if __name__ == '__main__':
     # initialize msg, loop and key command
     key_cmd = ''
     rate = rospy.Rate(300)
-    cmd_vel_msg = TwistStamped()
-    cmd_vel_msg.header.frame_id = cmd_vel_father_frame_id
+    if use_only_twist:
+        cmd_vel_msg = Twist()
+    else:
+        cmd_vel_msg = TwistStamped()
+        cmd_vel_msg.header.frame_id = cmd_vel_father_frame_id
 
     while not rospy.is_shutdown():
         seq += 1
@@ -200,11 +207,16 @@ if __name__ == '__main__':
         print("linear velocity: %.1f, angular velocity: %.1f     " % (lin_vel, ang_vel), end='\r')
 
         # write cmd message
-        cmd_vel_msg.header.seq = seq
-        cmd_vel_msg.header.stamp = rospy.Time.now()
-        cmd_vel_msg.twist.linear.x = vx
-        cmd_vel_msg.twist.linear.y = vy
-        cmd_vel_msg.twist.angular.z = w
+        if use_only_twist:
+            cmd_vel_msg.linear.x = vx
+            cmd_vel_msg.linear.y = vy
+            cmd_vel_msg.angular.z = w
+        else:
+            cmd_vel_msg.header.seq = seq
+            cmd_vel_msg.header.stamp = rospy.Time.now()
+            cmd_vel_msg.twist.linear.x = vx
+            cmd_vel_msg.twist.linear.y = vy
+            cmd_vel_msg.twist.angular.z = w
         
         current_terminal_id = str(get_focused_window())
 
