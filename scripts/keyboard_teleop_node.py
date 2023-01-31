@@ -12,6 +12,8 @@ import rospy
 from geometry_msgs.msg import TwistStamped, Twist
 
 vx, vy, w = 0, 0, 0
+script_terminal_id = ""
+terminal_focus = True
 
 def get_focused_window():
     return subprocess.run(['xdotool', 'getwindowfocus'], capture_output=True).stdout.decode('utf-8').split()
@@ -39,93 +41,105 @@ def diff_usage():
           "\t\t\tincrease/decrease speed\n\n"
           "\t\t\tlinear (v)\tangular (w)\n"
           "\tincrease:\tt \u2191\t\ty \u2191\n"
-          "\tdecrease:\tg \u2193\t\th \u2193\n", end='\r')
+          "\tdecrease:\tg \u2193\t\th \u2193\n")
 
 
 def diff_on_press(key):
     global vx, w, lin_vel, ang_vel, zero_vel, usage
-    try:
-        if key.char == 'w':
-            vx = lin_vel
-        elif key.char == 's':
-            vx = -lin_vel
-        elif key.char == 'd':
-            w = -ang_vel
-        elif key.char == 'a':
-            w = ang_vel
-        elif key.char == 't':
-            if lin_vel < max_v-0.01:
-                lin_vel += 0.1
-        elif key.char == 'g':
-            if lin_vel > 0.11:
-                lin_vel -= 0.1
-        elif key.char == 'y':
-            if ang_vel < max_w-0.01:
-                ang_vel += 0.1
-        elif key.char == 'h':
-            if ang_vel > 0.11:
-                ang_vel -= 0.1
-        else:
-            print_key_warn(key)
-    except AttributeError:
-        print_key_warn(key)
+
+    current_terminal_id = str(get_focused_window())
+
+    if not terminal_focus or current_terminal_id == script_terminal_id:
+        try:
+            if key.char == 'w':
+                vx = lin_vel
+            elif key.char == 's':
+                vx = -lin_vel
+            elif key.char == 'd':
+                w = -ang_vel
+            elif key.char == 'a':
+                w = ang_vel
+            elif key.char == 't':
+                if lin_vel < max_v-0.01:
+                    lin_vel += 0.1
+            elif key.char == 'g':
+                if lin_vel > 0.11:
+                    lin_vel -= 0.1
+            elif key.char == 'y':
+                if ang_vel < max_w-0.01:
+                    ang_vel += 0.1
+            elif key.char == 'h':
+                if ang_vel > 0.11:
+                    ang_vel -= 0.1
+        except AttributeError:
+            pass
 
 
 def diff_on_release(key):
     global vx, w, zero_vel
-    try:
-        if key.char == 'w' or key.char == 's':
-            vx = zero_vel
-        elif key.char == 'a' or key.char == 'd':
-            w = zero_vel
-    except AttributeError:
-        pass
+
+    current_terminal_id = str(get_focused_window())
+
+    if not terminal_focus or current_terminal_id == script_terminal_id:
+        try:
+            if key.char == 'w' or key.char == 's':
+                vx = zero_vel
+            elif key.char == 'a' or key.char == 'd':
+                w = zero_vel
+        except AttributeError:
+            pass
 
 
 def omni_on_press(key):
     global vx, vy, w, lin_vel, ang_vel, zero_vel, usage
-    try:
-        if key.char == 'w':
-            vx = lin_vel
-        elif key.char == 's':
-            vx = -lin_vel
-        elif key.char == 'a':
-            vy = lin_vel
-        elif key.char == 'd':
-            vy = -lin_vel
-        elif key.char == 'e':
-            w = -ang_vel
-        elif key.char == 'q':
-            w = ang_vel
-        elif key.char == 't':
-            if lin_vel < max_v-0.01:
-                lin_vel += 0.1
-        elif key.char == 'g':
-            if lin_vel > 0.11:
-                lin_vel -= 0.1
-        elif key.char == 'y':
-            if ang_vel < max_w-0.01:
-                ang_vel += 0.1
-        elif key.char == 'h':
-            if ang_vel > 0.11:
-                ang_vel -= 0.1
-        else:
-            print_key_warn(key)
-    except AttributeError:
-        print_key_warn(key)
+
+    current_terminal_id = str(get_focused_window())
+
+    if not terminal_focus or current_terminal_id == script_terminal_id:
+        try:
+            if key.char == 'w':
+                vx = lin_vel
+            elif key.char == 's':
+                vx = -lin_vel
+            elif key.char == 'a':
+                vy = lin_vel
+            elif key.char == 'd':
+                vy = -lin_vel
+            elif key.char == 'e':
+                w = -ang_vel
+            elif key.char == 'q':
+                w = ang_vel
+            elif key.char == 't':
+                if lin_vel < max_v-0.01:
+                    lin_vel += 0.1
+            elif key.char == 'g':
+                if lin_vel > 0.11:
+                    lin_vel -= 0.1
+            elif key.char == 'y':
+                if ang_vel < max_w-0.01:
+                    ang_vel += 0.1
+            elif key.char == 'h':
+                if ang_vel > 0.11:
+                    ang_vel -= 0.1
+        except AttributeError:
+            pass
 
 
 def omni_on_release(key):
     global vx, vy, w, zero_vel
-    try:
-        if key.char == 'w' or key.char == 's':
-            vx = zero_vel
-        elif key.char == 'a' or key.char == 'd':
-            vy = zero_vel
-        elif key.char == 'q' or key.char == 'e':
-            w = zero_vel
-    except AttributeError:
-        pass
+
+    current_terminal_id = str(get_focused_window())
+
+    if not terminal_focus or current_terminal_id == script_terminal_id:
+        try:
+            if key.char == 'w' or key.char == 's':
+                vx = zero_vel
+            elif key.char == 'a' or key.char == 'd':
+                vy = zero_vel
+            elif key.char == 'q' or key.char == 'e':
+                w = zero_vel
+        except AttributeError:
+            pass
 
 
 if __name__ == '__main__':
