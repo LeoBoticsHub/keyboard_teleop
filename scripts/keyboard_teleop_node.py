@@ -39,16 +39,7 @@ def diff_usage():
           "\t\t\tincrease/decrease speed\n\n"
           "\t\t\tlinear (v)\tangular (w)\n"
           "\tincrease:\tt \u2191\t\ty \u2191\n"
-          "\tdecrease:\tg \u2193\t\th \u2193\n")
-
-
-def print_key_warn(key):
-    global err_command_number
-    print("\n\n")
-    usage()
-    print()
-    rospy.logwarn("\b [{0}] Command {1} does NOT exists.\n".format(err_command_number, key))
-    err_command_number += 1
+          "\tdecrease:\tg \u2193\t\th \u2193\n", end='\r')
 
 
 def diff_on_press(key):
