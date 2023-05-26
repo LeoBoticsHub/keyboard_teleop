@@ -9,7 +9,7 @@ To use this package install the following dependences
 sudo apt install xdotool
 ```
 ## Usage
-change the ```config/keyboard_teleop_params.yaml``` file to set the following parameters based on your robot specs:
+change the ```config/keyboard_teleop.yaml``` file to set the following parameters based on your robot specs:
 - twist velocity command topic (cmd_vel_topic_name)
 - father frame id (cmd_vel_father_frame_id)
 - max linear velocity (max_lin_vel)
