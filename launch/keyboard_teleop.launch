@@ -1,12 +1,11 @@
 <?xml version="1.0" ?>
 <launch>
 
-    <arg name="model_type" default="omni" />
+    <arg name="config_name" default="keyboard_teleop" />
 
     <!--     Start the controller node -->
-    <node name="keyboard_teleop_node" pkg="ros_keyboard_teleop" type="keyboard_teleop_node.py" respawn="false" output="screen">
-        <rosparam command="load" file="$(find ros_keyboard_teleop)/config/keyboard_teleop_params.yaml"/>
-        <param name="model_type" value="$(arg model_type)" />
+    <node name="keyboard_teleop_node" pkg="keyboard_teleop" type="keyboard_teleop_node.py" respawn="false" output="screen">
+        <rosparam command="load" file="$(find keyboard_teleop)/config/$(arg config_name).yaml"/>
     </node>
 
 </launch>

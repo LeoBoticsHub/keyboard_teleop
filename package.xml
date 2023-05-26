@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ros_keyboard_teleop</name>
+  <name>keyboard_teleop</name>
   <version>1.0.0</version>
   <description>A ros keyboard teleop package</description>
 
