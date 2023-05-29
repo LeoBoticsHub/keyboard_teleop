@@ -23,8 +23,8 @@ def omni_usage():
           "------              Omni Keyboard Teleop               ------\n"
           "-------------------------------------------------------------\n\n"
           "\t   Keyboard Keys\t |    Corresponding movements\n\n"
-          "\tq\tw\te\t | \t\u27F2\t\u2191\t\u27F3\n\n"
-          "\ta\ts\td\t | \t\u2190\t\u2193\t\u2192\n\n"
+          "\tq\tw\te\t | \t\u2190\t\u2191\t\u2192\n\n"
+          "\ta\ts\td\t | \t\u27F2\t\u2193\t\u27F3\n\n"
           "\t\t\tincrease/decrease speed\n\n"
           "\t\t\tlinear (v)\tangular (w)\n"
           "\tincrease:\tt \u2191\t\ty \u2191\n"
@@ -101,14 +101,14 @@ def omni_on_press(key):
                 vx = lin_vel
             elif key.char == 's':
                 vx = -lin_vel
-            elif key.char == 'a':
-                vy = lin_vel
             elif key.char == 'd':
-                vy = -lin_vel
-            elif key.char == 'e':
                 w = -ang_vel
-            elif key.char == 'q':
+            elif key.char == 'a':
                 w = ang_vel
+            elif key.char == 'e':
+                vy = -lin_vel
+            elif key.char == 'q':
+                vy = lin_vel
             elif key.char == 't':
                 if lin_vel < max_v-0.01:
                     lin_vel += 0.1
@@ -135,9 +135,9 @@ def omni_on_release(key):
             if key.char == 'w' or key.char == 's':
                 vx = zero_vel
             elif key.char == 'a' or key.char == 'd':
-                vy = zero_vel
-            elif key.char == 'q' or key.char == 'e':
                 w = zero_vel
+            elif key.char == 'q' or key.char == 'e':
+                vy = zero_vel
         except AttributeError:
             pass
 
