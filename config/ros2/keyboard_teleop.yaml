@@ -1,0 +1,11 @@
+keyboard_teleop:
+  ros__parameters:
+    model_type: 'omni' # diff
+    max_v: 0.5
+    max_w: 0.5
+    min_v: 0.1
+    min_w: 0.1
+    velocity_step: 0.1
+    cmd_vel_topic: '/cmd_vel'
+    cmd_vel_father_frame_id: 'base_link'
+    use_twist_stamped: False

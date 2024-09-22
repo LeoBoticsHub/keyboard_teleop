@@ -6,6 +6,7 @@ As default the command can be given only if the mouse focus is on the terminal w
 ## Dependencies
 To use this package install the following dependences
 ```
+pip install pynput
 sudo apt install xdotool
 ```
 ## Usage
