@@ -96,7 +96,7 @@ class KeyboardListener:
         vy_diff = self.velocity.y - self.velocity_cmd.y
         w_diff = self.velocity.w - self.velocity_cmd.w
 
-        if abs(vx_diff) > 1e-3:
+        if abs(vx_diff) > 1e-5:
             if vx_diff < 0: # cmd_ref > curr_vel cmd_ref need acelleration 
                 self.velocity.x += self.linear_acceleration * delta_t
                 self.velocity.x = min(self.velocity.x, self.velocity_cmd.x)
@@ -104,7 +104,7 @@ class KeyboardListener:
                 self.velocity.x -= self.linear_acceleration * delta_t
                 self.velocity.x = max(self.velocity.x, self.velocity_cmd.x)
 
-        if abs(vy_diff) > 1e-3:
+        if abs(vy_diff) > 1e-5:
             if vy_diff < 0: # cmd_ref > curr_vel cmd_ref need acelleration 
                 self.velocity.y += self.linear_acceleration * delta_t
                 self.velocity.y = min(self.velocity.y, self.velocity_cmd.y)
@@ -112,13 +112,14 @@ class KeyboardListener:
                 self.velocity.y -= self.linear_acceleration * delta_t
                 self.velocity.y = max(self.velocity.y, self.velocity_cmd.y)
 
-        if abs(w_diff) > 1e-3:
+        if abs(w_diff) > 1e-5:
             if w_diff < 0: # cmd_ref > curr_vel cmd_ref need acelleration 
                 self.velocity.w += self.linear_acceleration * delta_t
                 self.velocity.w = min(self.velocity.w, self.velocity_cmd.w)
             else: # curr_vel > cmd_ref need decelleration
                 self.velocity.w -= self.linear_acceleration * delta_t
                 self.velocity.w = max(self.velocity.w, self.velocity_cmd.w)
+
         return self.velocity
 
 
