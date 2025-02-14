@@ -19,6 +19,8 @@ class KeyboardTeleopNode(Node):
         self.declare_parameter('min_v', 0.1)
         self.declare_parameter('min_w', 0.1)
         self.declare_parameter('velocity_step', 0.1)
+        self.declare_parameter('linear_acceleration', 0.5)
+        self.declare_parameter('angular_acceleration', 0.5)
         self.declare_parameter('cmd_vel_topic', '')
         self.declare_parameter('cmd_vel_father_frame_id', '')
         self.declare_parameter('use_twist_stamped', False)
@@ -30,6 +32,8 @@ class KeyboardTeleopNode(Node):
         min_v = self.get_parameter('min_v').get_parameter_value().double_value
         min_w = self.get_parameter('min_w').get_parameter_value().double_value
         velocity_step = self.get_parameter('velocity_step').get_parameter_value().double_value
+        linear_acceleration = self.get_parameter('linear_acceleration').get_parameter_value().double_value
+        angular_acceleration = self.get_parameter('angular_acceleration').get_parameter_value().double_value
 
         self.use_twist_stamped = self.get_parameter('use_twist_stamped').get_parameter_value().bool_value
 
@@ -48,7 +52,8 @@ class KeyboardTeleopNode(Node):
         # create Keyboard listener
         self.listener = KeyboardListener(
             model_type=model_type, max_v=max_v, max_w=max_w, 
-            min_v=min_v, min_w=min_w, velocity_step=velocity_step
+            min_v=min_v, min_w=min_w, velocity_step=velocity_step,
+            linear_acceleration=linear_acceleration, angular_acceleration=angular_acceleration
         )
 
         # Set the publish velocity timer
