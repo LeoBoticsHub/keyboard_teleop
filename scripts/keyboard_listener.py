@@ -2,6 +2,7 @@
 
 import os
 import subprocess
+import time
 
 from pynput import keyboard
 
@@ -18,10 +19,11 @@ class Velocity:
 
 class KeyboardListener:
 
-    def __init__(self, model_type='diff', max_v=0.5, max_w=0.5, min_v=0.1, min_w=0.1, velocity_step=0.1) -> None:
+    def __init__(self, model_type='diff', max_v=0.5, max_w=0.5, min_v=0.1, min_w=0.1, velocity_step=0.1, linear_acceleration=0.5, angular_acceleration=0.5) -> None:
         
         self.model_type=model_type
         self.script_terminal_id = str(self.get_focused_window())
+        self.velocity_cmd = Velocity(0.0, 0.0, 0.0)
         self.velocity = Velocity(0.0, 0.0, 0.0)
         self.linear_vel = max_v/2
         self.angular_vel = max_w/2
@@ -31,6 +33,10 @@ class KeyboardListener:
         self.min_v = min_v + epsilon
         self.min_w = min_w + epsilon
         self.velocity_step = velocity_step
+
+        self.linear_acceleration = linear_acceleration 
+        self.angular_acceleration = angular_acceleration
+        self.prev_time = time.time()
 
         # choose keyboard handling depending on robot type
         if model_type == 'omni':
@@ -80,7 +86,39 @@ class KeyboardListener:
         
     def get_velocity(self):
         if self.model_type == 'diff':
-            self.velocity.y = 0.0        
+            self.velocity_cmd.y = 0.0
+
+        curr_time = time.time()
+        delta_t = curr_time - self.prev_time
+        self.prev_time = curr_time
+
+        vx_diff = self.velocity.x - self.velocity_cmd.x
+        vy_diff = self.velocity.y - self.velocity_cmd.y
+        w_diff = self.velocity.w - self.velocity_cmd.w
+
+        if abs(vx_diff) > 1e-3:
+            if vx_diff < 0: # cmd_ref > curr_vel cmd_ref need acelleration 
+                self.velocity.x += self.linear_acceleration * delta_t
+                self.velocity.x = min(self.velocity.x, self.velocity_cmd.x)
+            else: # curr_vel > cmd_ref need decelleration
+                self.velocity.x -= self.linear_acceleration * delta_t
+                self.velocity.x = max(self.velocity.x, self.velocity_cmd.x)
+
+        if abs(vy_diff) > 1e-3:
+            if vy_diff < 0: # cmd_ref > curr_vel cmd_ref need acelleration 
+                self.velocity.y += self.linear_acceleration * delta_t
+                self.velocity.y = min(self.velocity.y, self.velocity_cmd.y)
+            else: # curr_vel > cmd_ref need decelleration
+                self.velocity.y -= self.linear_acceleration * delta_t
+                self.velocity.y = max(self.velocity.y, self.velocity_cmd.y)
+
+        if abs(w_diff) > 1e-3:
+            if w_diff < 0: # cmd_ref > curr_vel cmd_ref need acelleration 
+                self.velocity.w += self.linear_acceleration * delta_t
+                self.velocity.w = min(self.velocity.w, self.velocity_cmd.w)
+            else: # curr_vel > cmd_ref need decelleration
+                self.velocity.w -= self.linear_acceleration * delta_t
+                self.velocity.w = max(self.velocity.w, self.velocity_cmd.w)
         return self.velocity
 
 
@@ -91,17 +129,17 @@ class KeyboardListener:
         if current_terminal_id == self.script_terminal_id:
             try:
                 if key.char == 'w':
-                    self.velocity.x = self.linear_vel
+                    self.velocity_cmd.x = self.linear_vel
                 elif key.char == 's':
-                    self.velocity.x = -self.linear_vel
+                    self.velocity_cmd.x = -self.linear_vel
                 elif key.char == 'd':
-                    self.velocity.w = -self.angular_vel
+                    self.velocity_cmd.w = -self.angular_vel
                 elif key.char == 'a':
-                    self.velocity.w = self.angular_vel
+                    self.velocity_cmd.w = self.angular_vel
                 elif key.char == 'e':
-                    self.velocity.y = -self.linear_vel
+                    self.velocity_cmd.y = -self.linear_vel
                 elif key.char == 'q':
-                    self.velocity.y = self.linear_vel
+                    self.velocity_cmd.y = self.linear_vel
                 elif key.char == 't':
                     if self.linear_vel < self.max_v:
                         self.linear_vel += self.velocity_step
@@ -125,10 +163,10 @@ class KeyboardListener:
         if current_terminal_id == self.script_terminal_id:
             try:
                 if key.char == 'w' or key.char == 's':
-                    self.velocity.x = 0.0
+                    self.velocity_cmd.x = 0.0
                 elif key.char == 'a' or key.char == 'd':
-                    self.velocity.w = 0.0
+                    self.velocity_cmd.w = 0.0
                 elif key.char == 'q' or key.char == 'e':
-                    self.velocity.y = 0.0
+                    self.velocity_cmd.y = 0.0
             except AttributeError:
                 pass
