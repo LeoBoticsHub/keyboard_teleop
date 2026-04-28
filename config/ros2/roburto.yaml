@@ -1,0 +1,13 @@
+keyboard_teleop:
+  ros__parameters:
+    model_type: 'omni' # diff
+    max_v: 0.5
+    max_w: 0.5
+    min_v: 0.1
+    min_w: 0.1
+    velocity_step: 0.1
+    linear_acceleration: 0.5
+    angular_acceleration: 0.5
+    cmd_vel_topic: '/cmd_vel' # simulation: /cmd_vel, real robot: /move/cmd_vel
+    cmd_vel_father_frame_id: 'roburto_base_link'
+    use_twist_stamped: False
